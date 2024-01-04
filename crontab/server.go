@@ -122,3 +122,13 @@ func (s *Server) log(v ...interface{}) {
 		log.Println(v...)
 	}
 }
+
+func (s *Server) Schedule(fc func(schedule *Schedule)) {
+	schedule := NewSchedule()
+
+	fc(schedule)
+
+	for _, cmd := range schedule.Cmds() {
+		s.cron.AddFunc(cmd.Spec(), cmd.Cmd())
+	}
+}
